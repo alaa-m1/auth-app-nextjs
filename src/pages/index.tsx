@@ -11,6 +11,7 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
+import { redirect } from 'next/navigation';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,13 +54,13 @@ export default function Home() {
             <Box component="span" margin={"0px 15px 0px 5px"}>
               Not signed in{" "}
             </Box>
-            <Button
+            {/* <Button
               variant="contained"
               color="primary"
-              onClick={() => signIn()}
+              onClick={() => redirect('/login')}
             >
-              Sign in
-            </Button>
+              Login
+            </Button> */}
           </>
         )}
       </Box>{" "}
