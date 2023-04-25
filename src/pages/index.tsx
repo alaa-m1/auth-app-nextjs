@@ -26,13 +26,16 @@ export default function Home() {
               <CardActionArea>
                 <CardMedia
                   component="img"
-                  height="200"
+                  height="300"
                   image={`${session?.user?.image}`}
                   alt="green iguana"
                 />
                 <CardContent>
                   <Typography variant="h6" component="div" >
                     Signed in as <Typography component="span" bgcolor={"#0ff"}> {session?.user?.email}</Typography>
+                  </Typography>
+                  <Typography variant="h6" component="div" >
+                    <Typography component="span" bgcolor={"#ccc"}> {session?.user?.provider}</Typography>
                   </Typography>
                   <Button
                     variant="contained"

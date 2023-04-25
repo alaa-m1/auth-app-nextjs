@@ -1,10 +1,12 @@
-import NextAuth from "next-auth";
+import NextAuth, { Account, Profile, User } from "next-auth";
 import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import Auth0Provider from "next-auth/providers/auth0";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
+import { JWT } from "next-auth/jwt";
+import { Adapter } from "next-auth/adapters";
 
 export default NextAuth({
   providers: [
@@ -21,11 +23,48 @@ export default NextAuth({
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
     }),
     Auth0Provider({
-    clientId: process.env.AUTH0_CLIENT_ID as string,
-    clientSecret: process.env.AUTH0_CLIENT_SECRET as string,
-    issuer: process.env.AUTH0_ISSUER
-  })
+      clientId: process.env.AUTH0_CLIENT_ID as string,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET as string,
+      issuer: process.env.AUTH0_ISSUER,
+    }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
   adapter: MongoDBAdapter(clientPromise),
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async session({
+      session,
+      user,
+      token,
+    }: {
+      session: any;
+      user: User | undefined;
+      token: JWT;
+    }) {
+      if (session.user) {
+        session.user.provider = token.provider;
+      }
+      return session;
+    },
+    async jwt({
+      token,
+      user,
+      account,
+      profile,
+      isNewUser,
+    }: {
+      token: JWT;
+      user?: User | Adapter | undefined;
+      account?: Account | null | undefined;
+      profile?: Profile | undefined;
+      isNewUser?: boolean | undefined;
+    }) {
+      if (user) {
+        token.provider = account?.provider;
+      }
+      return token;
+    },
+  },
 });
