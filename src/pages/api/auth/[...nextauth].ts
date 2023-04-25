@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
+import Auth0Provider from "next-auth/providers/auth0";
 
 export default NextAuth({
   providers: [
@@ -17,6 +18,11 @@ export default NextAuth({
       clientId: process.env.FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
     }),
+    Auth0Provider({
+    clientId: process.env.AUTH0_CLIENT_ID as string,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET as string,
+    issuer: process.env.AUTH0_ISSUER
+  })
   ],
   secret: process.env.NEXTAUTH_SECRET,
 });
