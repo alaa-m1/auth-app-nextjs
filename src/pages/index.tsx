@@ -19,7 +19,7 @@ export default function Home() {
   console.log("session data=", session);
   return (
     <main style={{ height: "100vh" }}>
-      <Box display="flex" justifyContent="flex-start" m={2}>
+      <Box display="flex" justifyContent="center" m={2}>
         {session ? (
           <>
             <Card sx={{ maxWidth: 200 }}>
