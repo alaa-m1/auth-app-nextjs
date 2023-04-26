@@ -1,9 +1,1 @@
-.custom-input {
-  width: 100%;
-  background-color: transparent;
-  border: none;
-  padding: 5px 0px 5px 25px;
-  box-sizing: border-box;
-}
 
-.custom-input:focus {outline:none}
