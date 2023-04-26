@@ -32,7 +32,7 @@ const TextField = ({
       sx={{
         width: "auto",
         padding: "0px 10px",
-        margin: "10px 5px",
+        margin: "10px 0px",
       }}
     >
       <Box

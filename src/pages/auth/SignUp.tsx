@@ -1,16 +1,16 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import TextField from "../components";
 import PersonIcon from "@mui/icons-material/Person";
 import BusinessIcon from "@mui/icons-material/Business";
 import EmailIcon from "@mui/icons-material/Email";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import LockIcon from "@mui/icons-material/Lock";
-
-import { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import validator from "validator";
+import zxcvbn from "zxcvbn";
+import { useEffect, useState } from "react";
 
 const UserSchema = z
   .object({
@@ -52,16 +52,7 @@ const UserSchema = z
 type UserSchemaType = z.infer<typeof UserSchema>;
 
 const SignUp = () => {
-  // const [userInfo, setUserInfo] = useState({
-  //   firstName: "",
-  //   lastName: "",
-  //   address: "",
-  //   email: "",
-  //   mobile: "",
-  //   password: "",
-  //   confirmPassword: "",
-  // });
-
+  const [passwordScore, setPasswordScore] = useState(0);
   const {
     register,
     handleSubmit,
@@ -70,10 +61,13 @@ const SignUp = () => {
   } = useForm<UserSchemaType>({ resolver: zodResolver(UserSchema) });
   const onSubmit = (data: any) => console.log(data);
 
-  // console.log("userInfo=", userInfo);
-  // const handleChnage = (e: ChangeEvent<HTMLInputElement>) => {
-  //   setUserInfo((p) => ({ ...p, [e.target.name]: e.target.value }));
-  // };
+  const calculatePasswordStrengthScore = () => {
+    const password = watch().password;
+    return zxcvbn(password ? password : "").score;
+  };
+  useEffect(() => {
+    setPasswordScore(calculatePasswordStrengthScore());
+  }, [watch().password]);
   return (
     <Box>
       <Typography variant="h4" color="primary">
@@ -128,13 +122,36 @@ const SignUp = () => {
         <TextField
           name="password"
           label="Password"
-          placeholder=""
+          placeholder="******"
           icon={<LockIcon />}
           type="password"
           register={register}
           errors={errors.password?.message}
           disabled={isSubmitting}
         ></TextField>
+        {watch().password && watch().password.length > 0 && (
+          <Grid container sx={{ margin: "0px 0px 15px 10px" }}>
+            {Array.from(Array(5).keys()).map((item, index) => (
+              <Grid
+                key={index}
+                item
+                xs={2}
+                sx={{
+                  backgroundColor:
+                    passwordScore <= 2
+                      ? "#f00"
+                      : passwordScore < 4
+                      ? "#ff0"
+                      : "#0f0",
+                  height: "8px",
+                  borderRadius: "5px",
+                  margin: "0px 5px",
+                  boxSizing: "border-box",
+                }}
+              ></Grid>
+            ))}
+          </Grid>
+        )}
         <TextField
           name="confirmPassword"
           label="Confirm Password"
