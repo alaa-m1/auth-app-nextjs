@@ -19,7 +19,7 @@ export default function Home() {
   const { data: session } = useSession();
   console.log("session data=", session);
   return (
-    <main style={{ height: "100vh" }}>
+    <main>
       <Box display="flex" justifyContent="center" m={2}>
         {session ? (
           <>

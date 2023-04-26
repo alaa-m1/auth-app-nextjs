@@ -10,9 +10,9 @@ export async function middleware(req: NextRequest) {
   });
   if (pathname === "/") {
     if (!session)
-      return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/login`);
+      return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/auth`);
   }
-  if (pathname === "/login") {
+  if (pathname === "/auth") {
     if (session) return NextResponse.redirect(`${origin}`);
   }
   if(pathname==='/admin'){
