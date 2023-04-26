@@ -4,8 +4,11 @@ import {
   DetailedHTMLProps,
   InputHTMLAttributes,
   useId,
+  useState,
 } from "react";
 import ErrorIcon from "@mui/icons-material/Error";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 type TextFieldProps = DetailedHTMLProps<
   InputHTMLAttributes<HTMLInputElement>,
@@ -23,15 +26,20 @@ const TextField = ({
   icon,
   register,
   errors,
+  type,
   //   onChange,
   ...props
 }: TextFieldProps) => {
   const id = useId();
+  const [showPassword, setShowPassword] = useState(false);
+  const handleOnShowIconClick = () => {
+    setShowPassword((p) => !p);
+  };
   return (
     <Box
       sx={{
         width: "auto",
-        padding: "0px 10px",
+        padding: "0px",
         margin: "10px 0px",
       }}
     >
@@ -63,7 +71,7 @@ const TextField = ({
         <br />
         <input
           id={`input-${id}`}
-          type="text"
+          type={showPassword ? "text" : type}
           name={name}
           // onChange={onChange}
           {...register(name)}
@@ -79,6 +87,25 @@ const TextField = ({
             boxSizing: "border-box",
           }}
         />
+        {(name === "password" || name === "confirmPassword") && (
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: "4px",
+              right: errors ? "35px" : "10px",
+              svg: {
+                padding: "0px",
+                margin: "0px 0px 3px 5px",
+              },
+            }}
+          >
+            {showPassword ? (
+              <VisibilityIcon onClick={handleOnShowIconClick} />
+            ) : (
+              <VisibilityOffIcon onClick={handleOnShowIconClick} />
+            )}
+          </Box>
+        )}
         {errors && (
           <Box
             sx={{

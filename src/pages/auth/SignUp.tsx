@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Alert, Box, Button, Grid, Typography } from "@mui/material";
 import TextField from "../components";
 import PersonIcon from "@mui/icons-material/Person";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -43,6 +43,11 @@ const UserSchema = z
       .min(8, "The password must be at least 8 characters")
       .max(60, "The password must be less than 60 characters"),
     confirmPassword: z.string(),
+    accept: z.literal(true, {
+      errorMap: () => ({
+        message: "You should accept terms and conditions before continuing",
+      }),
+    }),
   })
   .refine((formData) => formData.password === formData.confirmPassword, {
     message: "Passwords do not match",
@@ -73,7 +78,7 @@ const SignUp = () => {
       <Typography variant="h4" color="primary">
         Sign Up
       </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{margin:"5px 10px"}}>
         <TextField
           name="firstName"
           label="First Name"
@@ -162,7 +167,16 @@ const SignUp = () => {
           errors={errors.confirmPassword?.message}
           disabled={isSubmitting}
         ></TextField>
-
+        <br />
+        <Box sx={{textAlign:'left', }}>
+        <input type="checkbox" id="accept" {...register("accept")} />
+        <label htmlFor="id">I accept &nbsp;  
+        <a href="" target="_blank" style={{textDecoration:'none'}}>terms and conditions</a>
+        </label>
+        {errors.accept && (
+          <Alert severity="error" sx={{marginTop:'2px'}}>{errors.accept?.message}</Alert>
+        )}
+        </Box>
         <Button variant="contained" color="primary" type="submit">
           Sign Up
         </Button>
