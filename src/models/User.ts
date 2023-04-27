@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "../../public/images/user-icon.png",
   },
-  emailVerified: {
+  accountActivated: {
     type: Boolean,
     default: false,
   },

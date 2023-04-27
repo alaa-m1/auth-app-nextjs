@@ -19,20 +19,20 @@ export default async function sendConfirmationEmail(
   } = process.env;
 
   let transport = await nodemailer.createTransport({
-    port: Number(SMTP_PORT),
-    host: SMTP_HOST,
-    auth: {
-      user: SMTP_EMAIL,
-      pass: SMTP_PASSWORD,
-    },
+    // port: Number(SMTP_PORT),
+    // host: SMTP_HOST,
+    // auth: {
+    //   user: SMTP_EMAIL,
+    //   pass: SMTP_PASSWORD,
+    // },
 
     /////OR
 
-    // service: "gmail",
-    // auth: {
-    //   user: MAILING_EMAIL,
-    //   pass: MAILING_PASSWORD,
-    // },
+    service: "gmail",
+    auth: {
+      user: MAILING_EMAIL,
+      pass: MAILING_PASSWORD,
+    },
   });
 
   const templateData = handlebars.compile(template);
@@ -46,10 +46,8 @@ export default async function sendConfirmationEmail(
   await new Promise((resolve, reject) => {
     transport.verify((error, success) => {
       if (error) {
-        console.log(error);
         reject(error);
       } else {
-        console.log("server in listening...");
         resolve(success);
       }
     });
@@ -65,10 +63,8 @@ export default async function sendConfirmationEmail(
   await new Promise((resolve, reject) => {
     transport.sendMail(options, (error, info) => {
       if (error) {
-        console.log(error);
         reject(error);
       } else {
-        console.log(info);
         resolve(info);
       }
     });
