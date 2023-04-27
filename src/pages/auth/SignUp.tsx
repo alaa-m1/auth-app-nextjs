@@ -5,18 +5,21 @@ import BusinessIcon from "@mui/icons-material/Business";
 import EmailIcon from "@mui/icons-material/Email";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import LockIcon from "@mui/icons-material/Lock";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import validator from "validator";
 import zxcvbn from "zxcvbn";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import LoadingButton from '@mui/lab/LoadingButton';
 
 const UserSchema = z
   .object({
     firstName: z
       .string()
-      .min(5, "The first name must be at least 5 characters")
+      .min(2, "The first name must be at least 2 characters")
       .max(32, "The first name must be less than 32 characters")
       .regex(
         new RegExp("^[a-zA-Z]+$"),
@@ -24,7 +27,7 @@ const UserSchema = z
       ),
     lastName: z
       .string()
-      .min(5, "The last name must be at least 5 characters")
+      .min(2, "The last name must be at least 2 characters")
       .max(32, "The last name must be less than 32 characters")
       .regex(
         new RegExp("^[a-zA-Z]+$"),
@@ -64,7 +67,17 @@ const SignUp = () => {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<UserSchemaType>({ resolver: zodResolver(UserSchema) });
-  const onSubmit = (data: any) => console.log(data);
+
+  const onSubmit: SubmitHandler<UserSchemaType> = async (formData) => {
+    try {
+      const { data } = await axios.post("/api/auth/signup", {
+        ...formData,
+      });
+      toast.success(data.message);
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
+  };
 
   const calculatePasswordStrengthScore = () => {
     const password = watch().password;
@@ -78,7 +91,10 @@ const SignUp = () => {
       <Typography variant="h4" color="primary">
         Sign Up
       </Typography>
-      <form onSubmit={handleSubmit(onSubmit)} style={{margin:"5px 10px"}}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ margin: "5px 10px" }}
+      >
         <TextField
           name="firstName"
           label="First Name"
@@ -114,6 +130,7 @@ const SignUp = () => {
           register={register}
           errors={errors.email?.message}
           disabled={isSubmitting}
+          autoComplete="off"
         ></TextField>
         <TextField
           name="mobile"
@@ -127,12 +144,14 @@ const SignUp = () => {
         <TextField
           name="password"
           label="Password"
-          placeholder="******"
+          placeholder=""
           icon={<LockIcon />}
           type="password"
           register={register}
           errors={errors.password?.message}
           disabled={isSubmitting}
+          autoComplete="off"
+          defaultValue=""
         ></TextField>
         {watch().password && watch().password.length > 0 && (
           <Grid container sx={{ margin: "0px 0px 15px 10px" }}>
@@ -166,20 +185,26 @@ const SignUp = () => {
           register={register}
           errors={errors.confirmPassword?.message}
           disabled={isSubmitting}
+          autoComplete="off"
         ></TextField>
         <br />
-        <Box sx={{textAlign:'left', }}>
-        <input type="checkbox" id="accept" {...register("accept")} />
-        <label htmlFor="id">I accept &nbsp;  
-        <a href="" target="_blank" style={{textDecoration:'none'}}>terms and conditions</a>
-        </label>
-        {errors.accept && (
-          <Alert severity="error" sx={{marginTop:'2px'}}>{errors.accept?.message}</Alert>
-        )}
+        <Box sx={{ textAlign: "left" }}>
+          <input type="checkbox" id="accept" {...register("accept")} />
+          <label htmlFor="id">
+            I accept &nbsp;
+            <a href="" target="_blank" style={{ textDecoration: "none" }}>
+              terms and conditions
+            </a>
+          </label>
+          {errors.accept && (
+            <Alert severity="error" sx={{ marginTop: "2px" }}>
+              {errors.accept?.message}
+            </Alert>
+          )}
         </Box>
-        <Button variant="contained" color="primary" type="submit">
+        <LoadingButton loading={isSubmitting} variant="contained" color="primary" type="submit">
           Sign Up
-        </Button>
+        </LoadingButton>
       </form>
     </Box>
   );
