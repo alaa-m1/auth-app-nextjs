@@ -13,7 +13,8 @@ import zxcvbn from "zxcvbn";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import LoadingButton from '@mui/lab/LoadingButton';
+import LoadingButton from "@mui/lab/LoadingButton";
+import { ScaleLoader } from "react-spinners";
 
 const UserSchema = z
   .object({
@@ -65,6 +66,7 @@ const SignUp = () => {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<UserSchemaType>({ resolver: zodResolver(UserSchema) });
 
@@ -73,6 +75,7 @@ const SignUp = () => {
       const { data } = await axios.post("/api/auth/signup", {
         ...formData,
       });
+      reset();
       toast.success(data.message);
     } catch (error: any) {
       toast.error(error.response.data.message);
@@ -91,10 +94,7 @@ const SignUp = () => {
       <Typography variant="h4" color="primary">
         Sign Up
       </Typography>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        style={{ margin: "5px 10px" }}
-      >
+      <form onSubmit={handleSubmit(onSubmit)} style={{ margin: "5px 10px" }}>
         <TextField
           name="firstName"
           label="First Name"
@@ -188,7 +188,7 @@ const SignUp = () => {
           autoComplete="off"
         ></TextField>
         <br />
-        <Box sx={{ textAlign: "left" }}>
+        <Box sx={{ textAlign: "left", marginBottom:'20px' }}>
           <input type="checkbox" id="accept" {...register("accept")} />
           <label htmlFor="id">
             I accept &nbsp;
@@ -202,7 +202,14 @@ const SignUp = () => {
             </Alert>
           )}
         </Box>
-        <LoadingButton loading={isSubmitting} variant="contained" color="primary" type="submit">
+        <LoadingButton
+          loading={isSubmitting}
+          loadingIndicator={<ScaleLoader color="#36d7b7" />}
+          variant="contained"
+          color="primary"
+          type="submit"
+          sx={{width:'50%', margin:'0px auto'}}
+        >
           Sign Up
         </LoadingButton>
       </form>

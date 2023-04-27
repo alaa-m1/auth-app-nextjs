@@ -3,6 +3,9 @@ import connectDb from "@/utils/connectDb";
 import type { NextApiRequest, NextApiResponse } from "next";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import { createActivationToken } from "@/utils/authTokens";
+import sendConfirmationEmail from "@/utils/sendConfirmationEmail";
+import { activationEmailTemplate } from "@/emailTemplates/activate";
 
 export default async function handler(
   req: NextApiRequest,
@@ -47,6 +50,18 @@ export default async function handler(
       password: cryptedPassword,
     });
     await newUser.save();
+    const activation_token = createActivationToken({
+      id: newUser._id.toString(),
+    });
+    const url = `${process.env.NEXTAUTH_URL}/activate/${activation_token}`;
+    await sendConfirmationEmail(
+      newUser.email,
+      newUser.name,
+      "",
+      url,
+      "Activate your account",
+      activationEmailTemplate
+    );
     res.json({
       message:
         "Sign up success. Please check your email for the activation message.",
