@@ -17,7 +17,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const { data: session } = useSession();
-  console.log("session data=", session);
   return (
     <main>
       <Box display="flex" justifyContent="center" m={2}>
@@ -70,7 +69,6 @@ export default function Home() {
 
 export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession(context);
-  console.log("server session=", session);
   return {
     props: {
       session,

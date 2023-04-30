@@ -4,8 +4,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import { createActivationToken } from "@/utils/authTokens";
-import sendConfirmationEmail from "@/utils/sendConfirmationEmail";
-import { activationEmailTemplate } from "@/emailTemplates/activate";
+import sendCustomEmail from "@/utils/sendCustomEmail";
+import { activationEmailTemplate } from "@/emailTemplates/activateTemplate";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,7 +17,7 @@ export default async function handler(
     if (!firstName || !lastName || !address || !email || !mobile || !password) {
       return res
         .status(400)
-        .json({ message: "Please fill all the required fields" });
+        .json({ message: "Please fill all the required fields to sign up" });
     }
     if (!validator.isEmail(email)) {
       return res.status(400).json({ message: "Please enter a valid email" });
@@ -53,8 +53,8 @@ export default async function handler(
     const activation_token = createActivationToken({
       id: newUser._id.toString(),
     });
-    const url = `${process.env.NEXTAUTH_URL}/activate/${activation_token}`;
-    await sendConfirmationEmail(
+    const url = `${process.env.BASE_URL}/activate/${activation_token}`;
+    await sendCustomEmail(
       newUser.email,
       newUser.name,
       "",
@@ -64,7 +64,7 @@ export default async function handler(
     );
     res.json({
       message:
-        "Sign up success. Please check your email for the activation message.",
+        "Registration success. Please check your email for the activation message.",
     });
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });

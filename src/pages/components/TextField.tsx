@@ -18,16 +18,14 @@ type TextFieldProps = DetailedHTMLProps<
   icon: JSX.Element;
   register: any;
   errors: any;
-  //   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 };
-const TextField = ({
+export const TextField = ({
   name,
   label,
   icon,
   register,
   errors,
   type,
-  //   onChange,
   ...props
 }: TextFieldProps) => {
   const id = useId();
@@ -73,7 +71,6 @@ const TextField = ({
           id={`input-${id}`}
           type={showPassword ? "text" : type}
           name={name}
-          // onChange={onChange}
           {...register(name)}
           className="custom-input"
           {...props}
@@ -127,5 +124,3 @@ const TextField = ({
     </Box>
   );
 };
-
-export default TextField;

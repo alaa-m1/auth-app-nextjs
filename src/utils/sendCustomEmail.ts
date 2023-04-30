@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import * as handlebars from "handlebars";
 
-export default async function sendConfirmationEmail(
+export default async function sendCustomEmail(
   to: string,
   name: string,
   image: string,

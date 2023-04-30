@@ -1,5 +1,14 @@
-import { Alert, Box, Grid, Typography, Link } from "@mui/material";
-import { TextField } from "../components";
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  Grid,
+  Typography,
+  Link,
+  useTheme,
+} from "@mui/material";
+import { LinkButton, TextField } from "../../components";
 import PersonIcon from "@mui/icons-material/Person";
 import BusinessIcon from "@mui/icons-material/Business";
 import EmailIcon from "@mui/icons-material/Email";
@@ -10,49 +19,21 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import validator from "validator";
 import zxcvbn from "zxcvbn";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { ScaleLoader } from "react-spinners";
-import { default as NextLink } from "next/link";
+import { NextPageContext } from "next/types";
+import { useRouter } from "next/router";
 
 const UserSchema = z
   .object({
-    firstName: z
-      .string()
-      .min(2, "The first name must be at least 2 characters")
-      .max(32, "The first name must be less than 32 characters")
-      .regex(
-        new RegExp("^[a-zA-Z]+$"),
-        "The first name must not contains any special characters"
-      ),
-    lastName: z
-      .string()
-      .min(2, "The last name must be at least 2 characters")
-      .max(32, "The last name must be less than 32 characters")
-      .regex(
-        new RegExp("^[a-zA-Z]+$"),
-        "The last name must not contains any special characters"
-      ),
-    address: z
-      .string()
-      .min(8, "The address must be at least 8 characters")
-      .max(100, "The address must be less than 100 characters"),
-    email: z.string().email("You must enter a valid Email"),
-    mobile: z.string().refine(validator.isMobilePhone, {
-      message: "Please enter a valid phone number",
-    }),
     password: z
       .string()
       .min(8, "The password must be at least 8 characters")
       .max(60, "The password must be less than 60 characters"),
     confirmPassword: z.string(),
-    accept: z.literal(true, {
-      errorMap: () => ({
-        message: "You should accept terms and conditions before continuing",
-      }),
-    }),
   })
   .refine((formData) => formData.password === formData.confirmPassword, {
     message: "Passwords do not match",
@@ -61,8 +42,11 @@ const UserSchema = z
 
 type UserSchemaType = z.infer<typeof UserSchema>;
 
-const SignUp = () => {
+const ResetPassword = ({ token }: { token: string }) => {
   const [passwordScore, setPasswordScore] = useState(0);
+  const timerRef = useRef<any>(null);
+  const router = useRouter();
+  const theme = useTheme();
   const {
     register,
     handleSubmit,
@@ -70,17 +54,22 @@ const SignUp = () => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<UserSchemaType>({ resolver: zodResolver(UserSchema) });
-  const onSubmit: SubmitHandler<UserSchemaType> = async (formData) => {
+  const onSubmit: SubmitHandler<UserSchemaType> = async (values) => {
     try {
-      const { data } = await axios.post("/api/auth/signup", {
-        ...formData,
+      const { data } = await axios.post("/api/auth/resetpassword", {
+        password: values.password,
+        token,
       });
       reset();
+      timerRef.current = setTimeout(() => router.push({ pathname: "/" }), 1000);
       toast.success(data.message);
     } catch (error: any) {
       toast.error(error.response.data.message);
     }
   };
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   const { password } = watch();
   useEffect(() => {
@@ -90,56 +79,20 @@ const SignUp = () => {
     setPasswordScore(calculatePasswordStrengthScore());
   }, [password]);
   return (
-    <Box>
+    <Box
+      sx={{
+        margin: "40px auto auto",
+        maxWidth: "600px",
+        boxShadow: "5px 5px 10px #ccc",
+        ":hover": { boxShadow: "10px 10px 20px #ccc" },
+        textAlign: "center",
+        paddingBottom: "10px",
+      }}
+    >
       <Typography variant="h4" color="primary">
-        Sign Up
+        Reset your password
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)} style={{ margin: "5px 10px" }}>
-        <TextField
-          name="firstName"
-          label="First Name"
-          placeholder="First name"
-          icon={<PersonIcon />}
-          register={register}
-          errors={errors.firstName?.message}
-          disabled={isSubmitting}
-        ></TextField>
-        <TextField
-          name="lastName"
-          label="Last Name"
-          placeholder="Last name"
-          icon={<PersonIcon />}
-          register={register}
-          errors={errors.lastName?.message}
-          disabled={isSubmitting}
-        ></TextField>
-        <TextField
-          name="address"
-          label="Address"
-          placeholder="Address"
-          icon={<BusinessIcon />}
-          register={register}
-          errors={errors.address?.message}
-          disabled={isSubmitting}
-        ></TextField>
-        <TextField
-          name="email"
-          label="Email"
-          placeholder="Email"
-          icon={<EmailIcon />}
-          register={register}
-          errors={errors.email?.message}
-          disabled={isSubmitting}
-        ></TextField>
-        <TextField
-          name="mobile"
-          label="Mobile number"
-          placeholder="Mobile number"
-          icon={<SmartphoneIcon />}
-          register={register}
-          errors={errors.mobile?.message}
-          disabled={isSubmitting}
-        ></TextField>
         <TextField
           name="password"
           label="Password"
@@ -186,25 +139,6 @@ const SignUp = () => {
           disabled={isSubmitting}
           autoComplete="off"
         ></TextField>
-        <br />
-        <Box sx={{ textAlign: "left", marginBottom: "20px" }}>
-          <input type="checkbox" id="accept" {...register("accept")} />
-          <label htmlFor="id">
-            I accept &nbsp;
-            <Link
-              component={NextLink}
-              href="/terms"
-              sx={{ textDecoration: "none" }}
-            >
-              terms and conditions
-            </Link>
-          </label>
-          {errors.accept && (
-            <Alert severity="error" sx={{ marginTop: "2px" }}>
-              {errors.accept?.message}
-            </Alert>
-          )}
-        </Box>
         <LoadingButton
           loading={isSubmitting}
           loadingIndicator={<ScaleLoader color="#36d7b7" />}
@@ -213,11 +147,34 @@ const SignUp = () => {
           type="submit"
           sx={{ width: "50%", margin: "0px auto" }}
         >
-          Sign Up
+          Reset your password
         </LoadingButton>
       </form>
+      <Box sx={{ "button:hover": { backgroundColor: "transparent" } }}>
+        <Divider
+          variant="fullWidth"
+          orientation="horizontal"
+          sx={{ margin: "20px 5px", display: "flex" }}
+        />
+        <Typography
+          variant="caption"
+          color={theme.palette.text.secondary}
+          fontSize={18}
+        >
+          If you already have an account &nbsp;
+        </Typography>
+        <LinkButton to="/" label="SIGN In" />
+      </Box>
     </Box>
   );
 };
 
-export default SignUp;
+export async function getServerSideProps(context: NextPageContext) {
+  const { query } = context;
+  const token = query.token;
+  return {
+    props: { token },
+  };
+}
+
+export default ResetPassword;
