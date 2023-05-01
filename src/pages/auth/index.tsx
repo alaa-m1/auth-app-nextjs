@@ -9,8 +9,8 @@ import { useState } from "react";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import { NextPageContext } from "next";
-import { Provider } from "./types";
-import { ColoredDevider, LinkButton, SocialButton } from "../components";
+import { Provider } from "../../types";
+import { ColoredDevider, LinkButton, SocialButton } from "../../components";
 import { useRouter } from "next/router";
 import ForgetPassword from "./ForgetPassword";
 

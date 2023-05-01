@@ -1,6 +1,6 @@
 import { Box, Typography,Link } from "@mui/material";
 import {default as NextLink}  from "next/link";
-import { ColoredDevider } from "./components";
+import { ColoredDevider } from "../components";
 const NotFoundPage = () => {
   return (
     <Box

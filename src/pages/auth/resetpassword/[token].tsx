@@ -8,7 +8,7 @@ import {
   Link,
   useTheme,
 } from "@mui/material";
-import { LinkButton, TextField } from "../../components";
+import { LinkButton, TextField } from "../../../components";
 import PersonIcon from "@mui/icons-material/Person";
 import BusinessIcon from "@mui/icons-material/Business";
 import EmailIcon from "@mui/icons-material/Email";

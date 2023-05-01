@@ -1,5 +1,5 @@
 import { Alert, Box, Grid, Typography, Link } from "@mui/material";
-import { TextField } from "../components";
+import { TextField } from "../../components";
 import PersonIcon from "@mui/icons-material/Person";
 import BusinessIcon from "@mui/icons-material/Business";
 import EmailIcon from "@mui/icons-material/Email";

@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { LinkButton, TextField } from "../components";
+import { LinkButton, TextField } from "../../components";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import { SubmitHandler, useForm } from "react-hook-form";

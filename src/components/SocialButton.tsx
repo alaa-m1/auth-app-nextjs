@@ -1,5 +1,5 @@
 import { Button, Grid } from "@mui/material";
-import { Provider } from "../auth/types";
+import { Provider } from "../types";
 import GoogleIcon from "@mui/icons-material/Google";
 import InterestsIcon from "@mui/icons-material/Interests";
 import FacebookIcon from "@mui/icons-material/Facebook";

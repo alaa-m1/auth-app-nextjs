@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { TextField } from "../components";
+import { TextField } from "../../components";
 import EmailIcon from "@mui/icons-material/Email";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
