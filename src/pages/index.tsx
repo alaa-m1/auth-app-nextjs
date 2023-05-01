@@ -11,14 +11,14 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
+import { redirect } from 'next/navigation';
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const { data: session } = useSession();
-  console.log("session data=", session);
   return (
-    <main style={{ height: "100vh" }}>
+    <main>
       <Box display="flex" justifyContent="center" m={2}>
         {session ? (
           <>
@@ -26,13 +26,16 @@ export default function Home() {
               <CardActionArea>
                 <CardMedia
                   component="img"
-                  height="200"
+                  height="300"
                   image={`${session?.user?.image}`}
                   alt="green iguana"
                 />
                 <CardContent>
                   <Typography variant="h6" component="div" >
                     Signed in as <Typography component="span" bgcolor={"#0ff"}> {session?.user?.email}</Typography>
+                  </Typography>
+                  <Typography variant="h6" component="div" >
+                    <Typography component="span" bgcolor={"#ccc"}> {session?.user?.provider}</Typography>
                   </Typography>
                   <Button
                     variant="contained"
@@ -50,13 +53,13 @@ export default function Home() {
             <Box component="span" margin={"0px 15px 0px 5px"}>
               Not signed in{" "}
             </Box>
-            <Button
+            {/* <Button
               variant="contained"
               color="primary"
-              onClick={() => signIn()}
+              onClick={() => redirect('/login')}
             >
-              Sign in
-            </Button>
+              Login
+            </Button> */}
           </>
         )}
       </Box>{" "}
@@ -66,7 +69,6 @@ export default function Home() {
 
 export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession(context);
-  console.log("server session=", session);
   return {
     props: {
       session,
